@@ -326,12 +326,14 @@
                 <input type="radio" name="hasContract" id="hasContractYes" value="yes">
                 <label class="toggle-label" for="hasContractYes">
                     <strong>Yes</strong>
+                    <span>Switching from another host</span>
                 </label>
             </div>
             <div class="toggle-option">
                 <input type="radio" name="hasContract" id="hasContractNo" value="no" checked>
                 <label class="toggle-label" for="hasContractNo">
                     <strong>No</strong>
+                    <span>New hosting customer</span>
                 </label>
             </div>
         </div>
@@ -398,7 +400,7 @@
                 </thead>
                 <tbody>
                     <tr class="overlap-row" id="overlapRow">
-                        <td>Contract overlap</td>
+                        <td>Remaining cost at current host</td>
                         <td class="current-host current-host-col"><span class="dash">—</span></td>
                         <td class="pressable" id="overlapCost">$0</td>
                     </tr>
@@ -563,7 +565,7 @@
                 sitesToMigrate = 0;
             }
             
-            // Contract overlap cost (paying both hosts during remaining contract period)
+            // Remaining cost at current host
             var overlapCost = currentCost * monthsRemaining;
             
             // Current host calculations
@@ -676,7 +678,6 @@
                 if (cashBonus === 10000) {
                     bonusText += ' (capped at $10,000)';
                 }
-                bonusText += '. Paid after 6 months of hosting.';
                 bonusNote.innerHTML = bonusText;
                 bonusNote.style.display = 'block';
             } else {
