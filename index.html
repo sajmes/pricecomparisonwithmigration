@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pressable Savings Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .calculator {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            color: #0073aa;
+            font-size: 28px;
+        }
+        
+        .logo span {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .hint {
+            font-weight: normal;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0073aa;
+        }
+        
+        .toggle-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .toggle-option {
+            flex: 1;
+            position: relative;
+        }
+        
+        .toggle-option input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .toggle-label {
+            display: block;
+            padding: 16px 12px;
+            background: #f5f5f5;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toggle-option input:checked + .toggle-label {
+            background: #e3f2fd;
+            border-color: #0073aa;
+            color: #0073aa;
+        }
+        
+        .toggle-label strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .toggle-label span {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .toggle-option input:checked + .toggle-label span {
+            color: #0073aa;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: #0073aa;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #005a87;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e1e5e9;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .savings-box {
+            background: #e8f5e9;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .savings-box.negative {
+            background: #ffebee;
+        }
+        
+        .savings-amount {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2e7d32;
+            margin: 0;
+        }
+        
+        .savings-box.negative .savings-amount {
+            color: #c62828;
+        }
+        
+        .savings-label {
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .verdict {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .verdict.yes {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        
+        .verdict.no {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+        
+        .breakdown {
+            margin-top: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .breakdown h4 {
+            margin: 0 0 12px 0;
+            color: #333;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        
+        .breakdown-item.indent {
+            padding-left: 16px;
+            color: #666;
+        }
+        
+        .plan-note {
+            background: #fff8e1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .plan-note strong {
+            color: #f57c00;
+        }
+        
+        .year2-box {
+            background: #f3e5f5;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .year2-box h4 {
+            margin: 0 0 12px 0;
+            color: #7b1fa2;
+            font-size: 14px;
+        }
+        
+        .year2-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        
+        .year2-item span {
+            color: #666;
+        }
+        
+        .year2-item strong {
+            color: #333;
+        }
+        
+        .year2-savings {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e1bee7;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+        
+        .year2-savings.positive {
+            color: #2e7d32;
+        }
+        
+        .year2-savings.negative {
+            color: #c62828;
+        }
+        
+        .total-box {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .total-box h4 {
+            margin: 0 0 12px 0;
+            color: #1565c0;
+            font-size: 14px;
+        }
+        
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        
+        .total-item span {
+            color: #666;
+        }
+        
+        .total-item strong {
+            color: #333;
+        }
+        
+        .total-item.bonus span {
+            color: #2e7d32;
+        }
+        
+        .total-item.bonus strong {
+            color: #2e7d32;
+        }
+        
+        .total-final {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #90caf9;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .total-final span {
+            color: #1565c0;
+        }
+        
+        .total-final strong {
+            color: #1565c0;
+        }
+        
+        .bonus-note {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #2e7d32;
+        }
+        
+        .bonus-note strong {
+            color: #1b5e20;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="logo">
+            <h1>Pressable</h1>
+            <span>Savings Calculator</span>
+        </div>
+        
+        <div class="input-group">
+            <label>
+                Current Monthly Hosting Cost
+                <span class="hint">(what you pay now)</span>
+            </label>
+            <input type="number" id="currentCost" placeholder="35.00" step="0.01" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label>
+                Months Remaining on Current Contract
+                <span class="hint">(0 if month-to-month)</span>
+            </label>
+            <input type="number" id="monthsRemaining" placeholder="6" min="0" max="12" value="0">
+        </div>
+        
+        <div class="input-group">
+            <label>
+                Number of Sites to Migrate
+                <span class="hint">(for cash bonus calculation)</span>
+            </label>
+            <input type="number" id="sitesToMigrate" placeholder="1" min="0" value="1">
+        </div>
+        
+        <label>Pressable Billing Type</label>
+        <div class="toggle-group">
+            <div class="toggle-option">
+                <input type="radio" name="billingType" id="billingAnnual" value="annual" checked>
+                <label class="toggle-label" for="billingAnnual">
+                    <strong>Annual</strong>
+                    <span>50% off, paid upfront</span>
+                </label>
+            </div>
+            <div class="toggle-option">
+                <input type="radio" name="billingType" id="billingMonthly" value="monthly">
+                <label class="toggle-label" for="billingMonthly">
+                    <strong>Monthly</strong>
+                    <span>25% off for 12 months</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label>Pressable Plan (discounted price)</label>
+            <select id="pressablePlan"></select>
+        </div>
+        
+        <button id="calcButton">Calculate Savings</button>
+        
+        <div class="results" id="results">
+            <div class="breakdown">
+                <h4>Year 1 — Cost Breakdown</h4>
+                <div class="breakdown-item">
+                    <span>Stay with current host (12 mo):</span>
+                    <strong id="stayTotal">$0</strong>
+                </div>
+                <div class="breakdown-item">
+                    <span>Switch to Pressable:</span>
+                    <strong id="switchTotal">$0</strong>
+                </div>
+                <div class="breakdown-item indent">
+                    <span>↳ Remaining cost of current hosting contract</span>
+                    <span id="buyoutCost">$0</span>
+                </div>
+                <div class="breakdown-item indent">
+                    <span>↳ Pressable (12 months)</span>
+                    <span id="pressableCost">$0</span>
+                </div>
+            </div>
+            
+            <div class="savings-box" id="savingsBox">
+                <p class="savings-amount" id="savingsAmount">$0</p>
+                <p class="savings-label" id="savingsLabel">saved in Year 1</p>
+            </div>
+            
+            <div class="verdict" id="verdict"></div>
+            
+            <div class="plan-note" id="planNote"></div>
+            
+            <div class="year2-box">
+                <h4>Year 2 — After Promotional Pricing Ends</h4>
+                <div class="year2-item">
+                    <span>Current host (12 mo):</span>
+                    <strong id="year2Current">$0</strong>
+                </div>
+                <div class="year2-item">
+                    <span>Pressable full price (12 mo):</span>
+                    <strong id="year2Pressable">$0</strong>
+                </div>
+                <div class="year2-item">
+                    <span>Pressable monthly rate:</span>
+                    <strong id="year2Monthly">$0/mo</strong>
+                </div>
+                <div class="year2-savings" id="year2Savings">
+                    <span>Year 2 difference:</span>
+                    <span id="year2Diff">$0</span>
+                </div>
+            </div>
+            
+            <div class="total-box">
+                <h4>2-Year Total Cost of Ownership</h4>
+                <div class="total-item">
+                    <span>Total 2-year hosting cost:</span>
+                    <strong id="total2YearHosting">$0</strong>
+                </div>
+                <div class="total-item bonus">
+                    <span>↳ Cash bonus (paid after 6 months):</span>
+                    <strong id="cashBonus">-$0</strong>
+                </div>
+                <div class="total-final">
+                    <span>Total cost of ownership (2 years):</span>
+                    <strong id="totalCostOwnership">$0</strong>
+                </div>
+            </div>
+            
+            <div class="bonus-note" id="bonusNote"></div>
+        </div>
+    </div>
+    
+    <script>
+        var plans = [
+            { name: "Signature 1", sites: 1, annual: 10.415, monthly: 18.75 },
+            { name: "Signature 2", sites: 3, annual: 18.75, monthly: 33.75 },
+            { name: "Signature 3", sites: 5, annual: 25.00, monthly: 45.00 },
+            { name: "Signature 4", sites: 10, annual: 37.50, monthly: 67.50 },
+            { name: "Signature 5", sites: 20, annual: 64.585, monthly: 116.25 },
+            { name: "Signature 6", sites: 50, annual: 145.935, monthly: 262.50 },
+            { name: "Signature 7", sites: 80, annual: 227.085, monthly: 408.75 },
+            { name: "Signature 8", sites: 100, annual: 281.25, monthly: 506.25 },
+            { name: "Signature 9", sites: 120, annual: 335.42, monthly: 603.75 },
+            { name: "Signature 10", sites: 150, annual: 416.67, monthly: 750.00 },
+            { name: "Signature 11", sites: 200, annual: 552.08, monthly: 993.75 },
+            { name: "Signature 12", sites: 250, annual: 687.50, monthly: 1237.50 },
+            { name: "Signature 13", sites: 300, annual: 822.92, monthly: 1481.25 },
+            { name: "Signature 14", sites: 350, annual: 958.33, monthly: 1725.00 },
+            { name: "Signature 15", sites: 400, annual: 1093.75, monthly: 1968.75 },
+            { name: "Signature 16", sites: 450, annual: 1229.17, monthly: 2212.50 },
+            { name: "Signature 17", sites: 500, annual: 1364.58, monthly: 2456.25 }
+        ];
+        
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        
+        function getBillingType() {
+            return document.querySelector('input[name="billingType"]:checked').value;
+        }
+        
+        function calculateCashBonus(sites) {
+            if (sites <= 0) {
+                return 0;
+            }
+            
+            var bonus = 0;
+            
+            // 1-10 sites: $150 per site
+            // 11+ sites: $200 per site
+            if (sites <= 10) {
+                bonus = sites * 150;
+            } else {
+                bonus = sites * 200;
+            }
+            
+            // Cap at $10,000
+            return Math.min(bonus, 10000);
+        }
+        
+        function updatePlanDropdown() {
+            var billingType = getBillingType();
+            var select = document.getElementById('pressablePlan');
+            var currentIndex = select.selectedIndex;
+            
+            select.innerHTML = '';
+            
+            for (var i = 0; i < plans.length; i++) {
+                var plan = plans[i];
+                var price = billingType === 'annual' ? plan.annual : plan.monthly;
+                var option = document.createElement('option');
+                option.value = i;
+                option.textContent = plan.name + ' — ' + formatCurrency(price) + '/mo (' + plan.sites + (plan.sites === 1 ? ' site' : ' sites') + ')';
+                select.appendChild(option);
+            }
+            
+            if (currentIndex >= 0 && currentIndex < plans.length) {
+                select.selectedIndex = currentIndex;
+            }
+        }
+        
+        function calculate() {
+            var currentCostInput = document.getElementById('currentCost');
+            var monthsRemainingInput = document.getElementById('monthsRemaining');
+            var sitesToMigrateInput = document.getElementById('sitesToMigrate');
+            var planSelect = document.getElementById('pressablePlan');
+            var billingType = getBillingType();
+            
+            var currentCost = parseFloat(currentCostInput.value);
+            var monthsRemaining = parseInt(monthsRemainingInput.value);
+            var sitesToMigrate = parseInt(sitesToMigrateInput.value);
+            var planIndex = parseInt(planSelect.value);
+            var plan = plans[planIndex];
+            
+            // Year 1 promo pricing
+            var pressableMonthly = billingType === 'annual' ? plan.annual : plan.monthly;
+            
+            // Year 2 full pricing (calculated from promo)
+            // Annual: 50% off in Year 1, so full price = promo × 2
+            // Monthly: 25% off in Year 1, so full price = promo ÷ 0.75
+            var fullMonthly;
+            if (billingType === 'annual') {
+                fullMonthly = plan.annual * 2;
+            } else {
+                fullMonthly = plan.monthly / 0.75;
+            }
+            
+            if (isNaN(currentCost) || currentCost <= 0) {
+                alert('Please enter your current monthly hosting cost');
+                return;
+            }
+            
+            if (isNaN(monthsRemaining)) {
+                monthsRemaining = 0;
+            }
+            
+            if (isNaN(sitesToMigrate) || sitesToMigrate < 0) {
+                sitesToMigrate = 0;
+            }
+            
+            // Year 1 calculations
+            var stayTotal = currentCost * 12;
+            var buyoutCost = currentCost * monthsRemaining;
+            var pressableAnnual = pressableMonthly * 12;
+            var switchTotal = buyoutCost + pressableAnnual;
+            var savings = stayTotal - switchTotal;
+            
+            // Year 2 calculations (full price)
+            var year2Current = currentCost * 12;
+            var year2Pressable = fullMonthly * 12;
+            var year2Diff = year2Current - year2Pressable;
+            
+            // 2-Year total calculations
+            var total2YearHosting = switchTotal + year2Pressable;
+            var cashBonus = calculateCashBonus(sitesToMigrate);
+            var totalCostOwnership = total2YearHosting - cashBonus;
+            
+            // Update Year 1 display
+            document.getElementById('stayTotal').textContent = formatCurrency(stayTotal);
+            document.getElementById('switchTotal').textContent = formatCurrency(switchTotal);
+            document.getElementById('buyoutCost').textContent = formatCurrency(buyoutCost);
+            document.getElementById('pressableCost').textContent = formatCurrency(pressableAnnual);
+            document.getElementById('savingsAmount').textContent = formatCurrency(Math.abs(savings));
+            
+            var savingsBox = document.getElementById('savingsBox');
+            var savingsLabel = document.getElementById('savingsLabel');
+            var verdict = document.getElementById('verdict');
+            var planNote = document.getElementById('planNote');
+            
+            if (savings > 0) {
+                savingsBox.className = 'savings-box';
+                savingsLabel.textContent = 'saved in Year 1';
+                verdict.className = 'verdict yes';
+                verdict.textContent = '✅ Switch now and save!';
+            } else if (savings < 0) {
+                savingsBox.className = 'savings-box negative';
+                savingsLabel.textContent = 'additional cost in Year 1';
+                verdict.className = 'verdict no';
+                verdict.textContent = '⏳ Wait until contract ends for maximum savings';
+            } else {
+                savingsBox.className = 'savings-box';
+                savingsLabel.textContent = 'break even';
+                verdict.className = 'verdict yes';
+                verdict.textContent = '➡️ Break even — switch for better service!';
+            }
+            
+            // Plan note based on billing type
+            if (billingType === 'annual') {
+                planNote.innerHTML = '<strong>Year 1 Annual billing:</strong> ' + formatCurrency(pressableAnnual) + ' paid upfront. 50% discount applied.';
+            } else {
+                planNote.innerHTML = '<strong>Year 1 Monthly billing:</strong> ' + formatCurrency(pressableMonthly) + '/mo for 12 months. 25% discount applied to each payment.';
+            }
+            
+            // Update Year 2 display
+            document.getElementById('year2Current').textContent = formatCurrency(year2Current);
+            document.getElementById('year2Pressable').textContent = formatCurrency(year2Pressable);
+            document.getElementById('year2Monthly').textContent = formatCurrency(fullMonthly) + '/mo';
+            
+            var year2SavingsEl = document.getElementById('year2Savings');
+            var year2DiffEl = document.getElementById('year2Diff');
+            
+            if (year2Diff > 0) {
+                year2SavingsEl.className = 'year2-savings positive';
+                year2DiffEl.textContent = 'Save ' + formatCurrency(year2Diff);
+            } else if (year2Diff < 0) {
+                year2SavingsEl.className = 'year2-savings negative';
+                year2DiffEl.textContent = 'Costs ' + formatCurrency(Math.abs(year2Diff)) + ' more';
+            } else {
+                year2SavingsEl.className = 'year2-savings';
+                year2DiffEl.textContent = 'Break even';
+            }
+            
+            // Update 2-Year Total display
+            document.getElementById('total2YearHosting').textContent = formatCurrency(total2YearHosting);
+            document.getElementById('cashBonus').textContent = '-' + formatCurrency(cashBonus);
+            document.getElementById('totalCostOwnership').textContent = formatCurrency(totalCostOwnership);
+            
+            // Bonus note
+            var bonusNote = document.getElementById('bonusNote');
+            if (sitesToMigrate > 0) {
+                var ratePerSite = sitesToMigrate >= 11 ? 200 : 150;
+                var bonusText = '<strong>Cash Bonus:</strong> ' + sitesToMigrate + ' site' + (sitesToMigrate > 1 ? 's' : '') + ' × $' + ratePerSite + ' = ' + formatCurrency(sitesToMigrate * ratePerSite);
+                if (cashBonus === 10000) {
+                    bonusText += ' (capped at $10,000)';
+                }
+                bonusText += '. Paid after 6 months of hosting.';
+                bonusNote.innerHTML = bonusText;
+                bonusNote.style.display = 'block';
+            } else {
+                bonusNote.style.display = 'none';
+            }
+            
+            document.getElementById('results').className = 'results show';
+        }
+        
+        // Initialize
+        updatePlanDropdown();
+        
+        // Event listeners
+        document.getElementById('calcButton').addEventListener('click', calculate);
+        document.getElementById('billingAnnual').addEventListener('change', updatePlanDropdown);
+        document.getElementById('billingMonthly').addEventListener('change', updatePlanDropdown);
+    </script>
+</body>
+</html>
