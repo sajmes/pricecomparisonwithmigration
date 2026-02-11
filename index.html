@@ -24,7 +24,7 @@
             background: white;
             border-radius: 16px;
             padding: 40px;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
@@ -156,6 +156,79 @@
             display: block;
         }
         
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .comparison-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e1e5e9;
+        }
+        
+        .comparison-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+        
+        .comparison-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .comparison-table tr.subtotal td {
+            border-top: 2px solid #e1e5e9;
+            font-weight: 600;
+        }
+        
+        .comparison-table tr.bonus td {
+            color: #2e7d32;
+        }
+        
+        .comparison-table tr.total td {
+            background: #f8f9fa;
+            font-weight: 700;
+            font-size: 15px;
+            border-top: 2px solid #e1e5e9;
+        }
+        
+        .comparison-table tr.total td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+        
+        .comparison-table tr.total td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+        
+        .comparison-table .current-host {
+            text-align: right;
+            color: #666;
+        }
+        
+        .comparison-table .pressable {
+            text-align: right;
+            color: #0073aa;
+        }
+        
+        .comparison-table .discount {
+            font-size: 12px;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        
+        .comparison-table .dash {
+            color: #ccc;
+        }
+        
         .savings-box {
             background: #e8f5e9;
             border-radius: 12px;
@@ -165,68 +238,32 @@
         }
         
         .savings-box.negative {
-            background: #ffebee;
+            background: #e3f2fd;
         }
         
         .savings-amount {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 700;
             color: #2e7d32;
             margin: 0;
         }
         
         .savings-box.negative .savings-amount {
-            color: #c62828;
+            color: #1565c0;
         }
         
         .savings-label {
             color: #666;
             margin-top: 4px;
-        }
-        
-        .verdict {
-            margin-top: 16px;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        .verdict.yes {
-            background: #c8e6c9;
-            color: #2e7d32;
-        }
-        
-        .verdict.no {
-            background: #ffcdd2;
-            color: #c62828;
-        }
-        
-        .breakdown {
-            margin-top: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 16px;
-        }
-        
-        .breakdown h4 {
-            margin: 0 0 12px 0;
-            color: #333;
-        }
-        
-        .breakdown-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
             font-size: 14px;
         }
         
-        .breakdown-item.indent {
-            padding-left: 16px;
-            color: #666;
+        .savings-emoji {
+            font-size: 24px;
+            margin-bottom: 8px;
         }
         
-        .plan-note {
+        .bonus-note {
             background: #fff8e1;
             border-radius: 8px;
             padding: 12px;
@@ -235,120 +272,8 @@
             color: #666;
         }
         
-        .plan-note strong {
-            color: #f57c00;
-        }
-        
-        .year2-box {
-            background: #f3e5f5;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-        
-        .year2-box h4 {
-            margin: 0 0 12px 0;
-            color: #7b1fa2;
-            font-size: 14px;
-        }
-        
-        .year2-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 14px;
-        }
-        
-        .year2-item span {
-            color: #666;
-        }
-        
-        .year2-item strong {
-            color: #333;
-        }
-        
-        .year2-savings {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #e1bee7;
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-        }
-        
-        .year2-savings.positive {
-            color: #2e7d32;
-        }
-        
-        .year2-savings.negative {
-            color: #c62828;
-        }
-        
-        .total-box {
-            background: #e3f2fd;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-        
-        .total-box h4 {
-            margin: 0 0 12px 0;
-            color: #1565c0;
-            font-size: 14px;
-        }
-        
-        .total-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 14px;
-        }
-        
-        .total-item span {
-            color: #666;
-        }
-        
-        .total-item strong {
-            color: #333;
-        }
-        
-        .total-item.bonus span {
-            color: #2e7d32;
-        }
-        
-        .total-item.bonus strong {
-            color: #2e7d32;
-        }
-        
-        .total-final {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 2px solid #90caf9;
-            display: flex;
-            justify-content: space-between;
-            font-weight: 700;
-            font-size: 16px;
-        }
-        
-        .total-final span {
-            color: #1565c0;
-        }
-        
-        .total-final strong {
-            color: #1565c0;
-        }
-        
-        .bonus-note {
-            background: #e8f5e9;
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 16px;
-            font-size: 13px;
-            color: #2e7d32;
-        }
-        
         .bonus-note strong {
-            color: #1b5e20;
+            color: #f57c00;
         }
     </style>
 </head>
@@ -365,14 +290,6 @@
                 <span class="hint">(what you pay now)</span>
             </label>
             <input type="number" id="currentCost" placeholder="35.00" step="0.01" min="0">
-        </div>
-        
-        <div class="input-group">
-            <label>
-                Months Remaining on Current Contract
-                <span class="hint">(0 if month-to-month)</span>
-            </label>
-            <input type="number" id="monthsRemaining" placeholder="6" min="0" max="12" value="0">
         </div>
         
         <div class="input-group">
@@ -409,69 +326,47 @@
         <button id="calcButton">Calculate Savings</button>
         
         <div class="results" id="results">
-            <div class="breakdown">
-                <h4>Year 1 — Cost Breakdown</h4>
-                <div class="breakdown-item">
-                    <span>Stay with current host (12 mo):</span>
-                    <strong id="stayTotal">$0</strong>
-                </div>
-                <div class="breakdown-item">
-                    <span>Switch to Pressable:</span>
-                    <strong id="switchTotal">$0</strong>
-                </div>
-                <div class="breakdown-item indent">
-                    <span>↳ Remaining cost of current hosting contract</span>
-                    <span id="buyoutCost">$0</span>
-                </div>
-                <div class="breakdown-item indent">
-                    <span>↳ Pressable (12 months)</span>
-                    <span id="pressableCost">$0</span>
-                </div>
-            </div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>2-Year Cost Comparison</th>
+                        <th>Current Host</th>
+                        <th>Pressable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Year 1</td>
+                        <td class="current-host" id="currentYear1">$0</td>
+                        <td class="pressable" id="pressableYear1">$0</td>
+                    </tr>
+                    <tr>
+                        <td>Year 2</td>
+                        <td class="current-host" id="currentYear2">$0</td>
+                        <td class="pressable" id="pressableYear2">$0</td>
+                    </tr>
+                    <tr class="subtotal">
+                        <td>Subtotal</td>
+                        <td class="current-host" id="currentSubtotal">$0</td>
+                        <td class="pressable" id="pressableSubtotal">$0</td>
+                    </tr>
+                    <tr class="bonus">
+                        <td>Cash bonus</td>
+                        <td class="current-host"><span class="dash">—</span></td>
+                        <td class="pressable" id="cashBonus">-$0</td>
+                    </tr>
+                    <tr class="total">
+                        <td>TOTAL (2 years)</td>
+                        <td class="current-host" id="currentTotal">$0</td>
+                        <td class="pressable" id="pressableTotal">$0</td>
+                    </tr>
+                </tbody>
+            </table>
             
             <div class="savings-box" id="savingsBox">
+                <div class="savings-emoji" id="savingsEmoji">💰</div>
                 <p class="savings-amount" id="savingsAmount">$0</p>
-                <p class="savings-label" id="savingsLabel">saved in Year 1</p>
-            </div>
-            
-            <div class="verdict" id="verdict"></div>
-            
-            <div class="plan-note" id="planNote"></div>
-            
-            <div class="year2-box">
-                <h4>Year 2 — After Promotional Pricing Ends</h4>
-                <div class="year2-item">
-                    <span>Current host (12 mo):</span>
-                    <strong id="year2Current">$0</strong>
-                </div>
-                <div class="year2-item">
-                    <span>Pressable full price (12 mo):</span>
-                    <strong id="year2Pressable">$0</strong>
-                </div>
-                <div class="year2-item">
-                    <span>Pressable monthly rate:</span>
-                    <strong id="year2Monthly">$0/mo</strong>
-                </div>
-                <div class="year2-savings" id="year2Savings">
-                    <span>Year 2 difference:</span>
-                    <span id="year2Diff">$0</span>
-                </div>
-            </div>
-            
-            <div class="total-box">
-                <h4>2-Year Total Cost of Ownership</h4>
-                <div class="total-item">
-                    <span>Total 2-year hosting cost:</span>
-                    <strong id="total2YearHosting">$0</strong>
-                </div>
-                <div class="total-item bonus">
-                    <span>↳ Cash bonus (paid after 6 months):</span>
-                    <strong id="cashBonus">-$0</strong>
-                </div>
-                <div class="total-final">
-                    <span>Total cost of ownership (2 years):</span>
-                    <strong id="totalCostOwnership">$0</strong>
-                </div>
+                <p class="savings-label" id="savingsLabel">saved over 2 years</p>
             </div>
             
             <div class="bonus-note" id="bonusNote"></div>
@@ -549,23 +444,20 @@
         
         function calculate() {
             var currentCostInput = document.getElementById('currentCost');
-            var monthsRemainingInput = document.getElementById('monthsRemaining');
             var sitesToMigrateInput = document.getElementById('sitesToMigrate');
             var planSelect = document.getElementById('pressablePlan');
             var billingType = getBillingType();
             
             var currentCost = parseFloat(currentCostInput.value);
-            var monthsRemaining = parseInt(monthsRemainingInput.value);
             var sitesToMigrate = parseInt(sitesToMigrateInput.value);
             var planIndex = parseInt(planSelect.value);
             var plan = plans[planIndex];
             
             // Year 1 promo pricing
             var pressableMonthly = billingType === 'annual' ? plan.annual : plan.monthly;
+            var discountPercent = billingType === 'annual' ? 50 : 25;
             
-            // Year 2 full pricing (calculated from promo)
-            // Annual: 50% off in Year 1, so full price = promo × 2
-            // Monthly: 25% off in Year 1, so full price = promo ÷ 0.75
+            // Year 2 full pricing
             var fullMonthly;
             if (billingType === 'annual') {
                 fullMonthly = plan.annual * 2;
@@ -578,96 +470,82 @@
                 return;
             }
             
-            if (isNaN(monthsRemaining)) {
-                monthsRemaining = 0;
-            }
-            
             if (isNaN(sitesToMigrate) || sitesToMigrate < 0) {
                 sitesToMigrate = 0;
             }
             
-            // Year 1 calculations
-            var stayTotal = currentCost * 12;
-            var buyoutCost = currentCost * monthsRemaining;
-            var pressableAnnual = pressableMonthly * 12;
-            var switchTotal = buyoutCost + pressableAnnual;
-            var savings = stayTotal - switchTotal;
+            // Current host calculations
+            var currentYear1 = currentCost * 12;
+            var currentYear2 = currentCost * 12;
+            var currentSubtotal = currentYear1 + currentYear2;
+            var currentTotal = currentSubtotal;
             
-            // Year 2 calculations (full price)
-            var year2Current = currentCost * 12;
-            var year2Pressable = fullMonthly * 12;
-            var year2Diff = year2Current - year2Pressable;
-            
-            // 2-Year total calculations
-            var total2YearHosting = switchTotal + year2Pressable;
+            // Pressable calculations
+            var pressableYear1 = pressableMonthly * 12;
+            var pressableYear2 = fullMonthly * 12;
+            var pressableSubtotal = pressableYear1 + pressableYear2;
             var cashBonus = calculateCashBonus(sitesToMigrate);
-            var totalCostOwnership = total2YearHosting - cashBonus;
+            var pressableTotal = pressableSubtotal - cashBonus;
             
-            // Update Year 1 display
-            document.getElementById('stayTotal').textContent = formatCurrency(stayTotal);
-            document.getElementById('switchTotal').textContent = formatCurrency(switchTotal);
-            document.getElementById('buyoutCost').textContent = formatCurrency(buyoutCost);
-            document.getElementById('pressableCost').textContent = formatCurrency(pressableAnnual);
-            document.getElementById('savingsAmount').textContent = formatCurrency(Math.abs(savings));
+            // Savings calculation
+            var savings = currentTotal - pressableTotal;
             
-            var savingsBox = document.getElementById('savingsBox');
-            var savingsLabel = document.getElementById('savingsLabel');
-            var verdict = document.getElementById('verdict');
-            var planNote = document.getElementById('planNote');
+            // Update table
+            document.getElementById('currentYear1').textContent = formatCurrency(currentYear1);
+            document.getElementById('currentYear2').textContent = formatCurrency(currentYear2);
+            document.getElementById('currentSubtotal').textContent = formatCurrency(currentSubtotal);
+            document.getElementById('currentTotal').textContent = formatCurrency(currentTotal);
             
-            if (savings > 0) {
-                savingsBox.className = 'savings-box';
-                savingsLabel.textContent = 'saved in Year 1';
-                verdict.className = 'verdict yes';
-                verdict.textContent = '✅ Switch now and save!';
-            } else if (savings < 0) {
-                savingsBox.className = 'savings-box negative';
-                savingsLabel.textContent = 'additional cost in Year 1';
-                verdict.className = 'verdict no';
-                verdict.textContent = '⏳ Wait until contract ends for maximum savings';
-            } else {
-                savingsBox.className = 'savings-box';
-                savingsLabel.textContent = 'break even';
-                verdict.className = 'verdict yes';
-                verdict.textContent = '➡️ Break even — switch for better service!';
-            }
-            
-            // Plan note based on billing type
-            if (billingType === 'annual') {
-                planNote.innerHTML = '<strong>Year 1 Annual billing:</strong> ' + formatCurrency(pressableAnnual) + ' paid upfront. 50% discount applied.';
-            } else {
-                planNote.innerHTML = '<strong>Year 1 Monthly billing:</strong> ' + formatCurrency(pressableMonthly) + '/mo for 12 months. 25% discount applied to each payment.';
-            }
-            
-            // Update Year 2 display
-            document.getElementById('year2Current').textContent = formatCurrency(year2Current);
-            document.getElementById('year2Pressable').textContent = formatCurrency(year2Pressable);
-            document.getElementById('year2Monthly').textContent = formatCurrency(fullMonthly) + '/mo';
-            
-            var year2SavingsEl = document.getElementById('year2Savings');
-            var year2DiffEl = document.getElementById('year2Diff');
-            
-            if (year2Diff > 0) {
-                year2SavingsEl.className = 'year2-savings positive';
-                year2DiffEl.textContent = 'Save ' + formatCurrency(year2Diff);
-            } else if (year2Diff < 0) {
-                year2SavingsEl.className = 'year2-savings negative';
-                year2DiffEl.textContent = 'Costs ' + formatCurrency(Math.abs(year2Diff)) + ' more';
-            } else {
-                year2SavingsEl.className = 'year2-savings';
-                year2DiffEl.textContent = 'Break even';
-            }
-            
-            // Update 2-Year Total display
-            document.getElementById('total2YearHosting').textContent = formatCurrency(total2YearHosting);
+            document.getElementById('pressableYear1').innerHTML = formatCurrency(pressableYear1) + ' <span class="discount">(' + discountPercent + '% off)</span>';
+            document.getElementById('pressableYear2').textContent = formatCurrency(pressableYear2);
+            document.getElementById('pressableSubtotal').textContent = formatCurrency(pressableSubtotal);
             document.getElementById('cashBonus').textContent = '-' + formatCurrency(cashBonus);
-            document.getElementById('totalCostOwnership').textContent = formatCurrency(totalCostOwnership);
+            
+            // Handle negative total (getting paid)
+            if (pressableTotal < 0) {
+                document.getElementById('pressableTotal').textContent = '-' + formatCurrency(Math.abs(pressableTotal));
+            } else {
+                document.getElementById('pressableTotal').textContent = formatCurrency(pressableTotal);
+            }
+            
+            // Update savings box
+            var savingsBox = document.getElementById('savingsBox');
+            var savingsAmount = document.getElementById('savingsAmount');
+            var savingsLabel = document.getElementById('savingsLabel');
+            var savingsEmoji = document.getElementById('savingsEmoji');
+            
+            if (pressableTotal < 0) {
+                // Getting paid to switch
+                savingsBox.className = 'savings-box negative';
+                savingsEmoji.textContent = '🎉';
+                savingsAmount.textContent = formatCurrency(Math.abs(pressableTotal));
+                savingsLabel.textContent = 'YOU GET PAID to switch to Pressable';
+            } else if (savings > 0) {
+                // Saving money
+                savingsBox.className = 'savings-box';
+                savingsEmoji.textContent = '💰';
+                savingsAmount.textContent = formatCurrency(savings);
+                savingsLabel.textContent = 'saved over 2 years';
+            } else if (savings < 0) {
+                // Costs more
+                savingsBox.className = 'savings-box negative';
+                savingsEmoji.textContent = '📊';
+                savingsAmount.textContent = formatCurrency(Math.abs(savings));
+                savingsLabel.textContent = 'additional cost over 2 years';
+            } else {
+                // Break even
+                savingsBox.className = 'savings-box';
+                savingsEmoji.textContent = '➡️';
+                savingsAmount.textContent = '$0';
+                savingsLabel.textContent = 'break even — switch for better service!';
+            }
             
             // Bonus note
             var bonusNote = document.getElementById('bonusNote');
             if (sitesToMigrate > 0) {
                 var ratePerSite = sitesToMigrate >= 11 ? 200 : 150;
-                var bonusText = '<strong>Cash Bonus:</strong> ' + sitesToMigrate + ' site' + (sitesToMigrate > 1 ? 's' : '') + ' × $' + ratePerSite + ' = ' + formatCurrency(sitesToMigrate * ratePerSite);
+                var rawBonus = sitesToMigrate * ratePerSite;
+                var bonusText = '<strong>Cash Bonus:</strong> ' + sitesToMigrate + ' site' + (sitesToMigrate > 1 ? 's' : '') + ' × $' + ratePerSite + ' = ' + formatCurrency(rawBonus);
                 if (cashBonus === 10000) {
                     bonusText += ' (capped at $10,000)';
                 }
