@@ -49,6 +49,10 @@
             margin-bottom: 24px;
         }
         
+        .input-group.hidden {
+            display: none;
+        }
+        
         label {
             display: block;
             margin-bottom: 8px;
@@ -229,6 +233,14 @@
             color: #ccc;
         }
         
+        .comparison-table .current-host-col {
+            display: table-cell;
+        }
+        
+        .comparison-table.no-current .current-host-col {
+            display: none;
+        }
+        
         .savings-box {
             background: #e8f5e9;
             border-radius: 12px;
@@ -241,6 +253,10 @@
             background: #e3f2fd;
         }
         
+        .savings-box.info {
+            background: #e3f2fd;
+        }
+        
         .savings-amount {
             font-size: 32px;
             font-weight: 700;
@@ -249,6 +265,10 @@
         }
         
         .savings-box.negative .savings-amount {
+            color: #1565c0;
+        }
+        
+        .savings-box.info .savings-amount {
             color: #1565c0;
         }
         
@@ -284,7 +304,25 @@
             <span>Savings Calculator</span>
         </div>
         
-        <div class="input-group">
+        <label>Is there a current hosting contract in place?</label>
+        <div class="toggle-group">
+            <div class="toggle-option">
+                <input type="radio" name="hasContract" id="hasContractYes" value="yes">
+                <label class="toggle-label" for="hasContractYes">
+                    <strong>Yes</strong>
+                    <span>Switching from another host</span>
+                </label>
+            </div>
+            <div class="toggle-option">
+                <input type="radio" name="hasContract" id="hasContractNo" value="no" checked>
+                <label class="toggle-label" for="hasContractNo">
+                    <strong>No</strong>
+                    <span>New hosting customer</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="input-group hidden" id="currentCostGroup">
             <label>
                 Current Monthly Hosting Cost
                 <span class="hint">(what you pay now)</span>
@@ -326,38 +364,38 @@
         <button id="calcButton">Calculate Savings</button>
         
         <div class="results" id="results">
-            <table class="comparison-table">
+            <table class="comparison-table" id="comparisonTable">
                 <thead>
                     <tr>
-                        <th>2-Year Cost Comparison</th>
-                        <th>Current Host</th>
+                        <th id="tableHeader">2-Year Cost Comparison</th>
+                        <th class="current-host-col">Current Host</th>
                         <th>Pressable</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>Year 1</td>
-                        <td class="current-host" id="currentYear1">$0</td>
+                        <td class="current-host current-host-col" id="currentYear1">$0</td>
                         <td class="pressable" id="pressableYear1">$0</td>
                     </tr>
                     <tr>
                         <td>Year 2</td>
-                        <td class="current-host" id="currentYear2">$0</td>
+                        <td class="current-host current-host-col" id="currentYear2">$0</td>
                         <td class="pressable" id="pressableYear2">$0</td>
                     </tr>
                     <tr class="subtotal">
                         <td>Subtotal</td>
-                        <td class="current-host" id="currentSubtotal">$0</td>
+                        <td class="current-host current-host-col" id="currentSubtotal">$0</td>
                         <td class="pressable" id="pressableSubtotal">$0</td>
                     </tr>
                     <tr class="bonus">
                         <td>Cash bonus</td>
-                        <td class="current-host"><span class="dash">—</span></td>
+                        <td class="current-host current-host-col"><span class="dash">—</span></td>
                         <td class="pressable" id="cashBonus">-$0</td>
                     </tr>
                     <tr class="total">
                         <td>TOTAL (2 years)</td>
-                        <td class="current-host" id="currentTotal">$0</td>
+                        <td class="current-host current-host-col" id="currentTotal">$0</td>
                         <td class="pressable" id="pressableTotal">$0</td>
                     </tr>
                 </tbody>
@@ -402,6 +440,10 @@
             return document.querySelector('input[name="billingType"]:checked').value;
         }
         
+        function getHasContract() {
+            return document.querySelector('input[name="hasContract"]:checked').value === 'yes';
+        }
+        
         function calculateCashBonus(sites) {
             if (sites <= 0) {
                 return 0;
@@ -442,13 +484,25 @@
             }
         }
         
+        function updateContractFields() {
+            var hasContract = getHasContract();
+            var currentCostGroup = document.getElementById('currentCostGroup');
+            
+            if (hasContract) {
+                currentCostGroup.classList.remove('hidden');
+            } else {
+                currentCostGroup.classList.add('hidden');
+            }
+        }
+        
         function calculate() {
             var currentCostInput = document.getElementById('currentCost');
             var sitesToMigrateInput = document.getElementById('sitesToMigrate');
             var planSelect = document.getElementById('pressablePlan');
             var billingType = getBillingType();
+            var hasContract = getHasContract();
             
-            var currentCost = parseFloat(currentCostInput.value);
+            var currentCost = hasContract ? parseFloat(currentCostInput.value) : 0;
             var sitesToMigrate = parseInt(sitesToMigrateInput.value);
             var planIndex = parseInt(planSelect.value);
             var plan = plans[planIndex];
@@ -465,7 +519,7 @@
                 fullMonthly = plan.monthly / 0.75;
             }
             
-            if (isNaN(currentCost) || currentCost <= 0) {
+            if (hasContract && (isNaN(currentCost) || currentCost <= 0)) {
                 alert('Please enter your current monthly hosting cost');
                 return;
             }
@@ -490,7 +544,19 @@
             // Savings calculation
             var savings = currentTotal - pressableTotal;
             
-            // Update table
+            // Update table header and visibility
+            var comparisonTable = document.getElementById('comparisonTable');
+            var tableHeader = document.getElementById('tableHeader');
+            
+            if (hasContract) {
+                comparisonTable.classList.remove('no-current');
+                tableHeader.textContent = '2-Year Cost Comparison';
+            } else {
+                comparisonTable.classList.add('no-current');
+                tableHeader.textContent = 'Your Pressable Investment';
+            }
+            
+            // Update table values
             document.getElementById('currentYear1').textContent = formatCurrency(currentYear1);
             document.getElementById('currentYear2').textContent = formatCurrency(currentYear2);
             document.getElementById('currentSubtotal').textContent = formatCurrency(currentSubtotal);
@@ -514,7 +580,20 @@
             var savingsLabel = document.getElementById('savingsLabel');
             var savingsEmoji = document.getElementById('savingsEmoji');
             
-            if (pressableTotal < 0) {
+            if (!hasContract) {
+                // No current contract - show total cost/earnings
+                if (pressableTotal < 0) {
+                    savingsBox.className = 'savings-box negative';
+                    savingsEmoji.textContent = '🎉';
+                    savingsAmount.textContent = formatCurrency(Math.abs(pressableTotal));
+                    savingsLabel.textContent = 'YOU GET PAID to host with Pressable';
+                } else {
+                    savingsBox.className = 'savings-box info';
+                    savingsEmoji.textContent = '✨';
+                    savingsAmount.textContent = formatCurrency(pressableTotal);
+                    savingsLabel.textContent = 'total 2-year cost of ownership';
+                }
+            } else if (pressableTotal < 0) {
                 // Getting paid to switch
                 savingsBox.className = 'savings-box negative';
                 savingsEmoji.textContent = '🎉';
@@ -561,11 +640,14 @@
         
         // Initialize
         updatePlanDropdown();
+        updateContractFields();
         
         // Event listeners
         document.getElementById('calcButton').addEventListener('click', calculate);
         document.getElementById('billingAnnual').addEventListener('change', updatePlanDropdown);
         document.getElementById('billingMonthly').addEventListener('change', updatePlanDropdown);
+        document.getElementById('hasContractYes').addEventListener('change', updateContractFields);
+        document.getElementById('hasContractNo').addEventListener('change', updateContractFields);
     </script>
 </body>
 </html>
