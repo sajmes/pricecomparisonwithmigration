@@ -241,6 +241,14 @@
             display: none;
         }
         
+        .comparison-table tr.overlap-row {
+            display: table-row;
+        }
+        
+        .comparison-table tr.overlap-row.hidden {
+            display: none;
+        }
+        
         .savings-box {
             background: #e8f5e9;
             border-radius: 12px;
@@ -295,6 +303,14 @@
         .bonus-note strong {
             color: #f57c00;
         }
+        
+        .contract-fields {
+            display: none;
+        }
+        
+        .contract-fields.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -322,12 +338,22 @@
             </div>
         </div>
         
-        <div class="input-group hidden" id="currentCostGroup">
-            <label>
-                Current Monthly Hosting Cost
-                <span class="hint">(what you pay now)</span>
-            </label>
-            <input type="number" id="currentCost" placeholder="35.00" step="0.01" min="0">
+        <div class="contract-fields" id="contractFields">
+            <div class="input-group">
+                <label>
+                    Current Monthly Hosting Cost
+                    <span class="hint">(what you pay now)</span>
+                </label>
+                <input type="number" id="currentCost" placeholder="35.00" step="0.01" min="0">
+            </div>
+            
+            <div class="input-group">
+                <label>
+                    Months Remaining on Current Contract
+                    <span class="hint">(0 if month-to-month)</span>
+                </label>
+                <input type="number" id="monthsRemaining" placeholder="0" min="0" max="24" value="0">
+            </div>
         </div>
         
         <div class="input-group">
@@ -373,6 +399,11 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr class="overlap-row" id="overlapRow">
+                        <td>Contract overlap</td>
+                        <td class="current-host current-host-col"><span class="dash">—</span></td>
+                        <td class="pressable" id="overlapCost">$0</td>
+                    </tr>
                     <tr>
                         <td>Year 1</td>
                         <td class="current-host current-host-col" id="currentYear1">$0</td>
@@ -486,23 +517,25 @@
         
         function updateContractFields() {
             var hasContract = getHasContract();
-            var currentCostGroup = document.getElementById('currentCostGroup');
+            var contractFields = document.getElementById('contractFields');
             
             if (hasContract) {
-                currentCostGroup.classList.remove('hidden');
+                contractFields.classList.add('show');
             } else {
-                currentCostGroup.classList.add('hidden');
+                contractFields.classList.remove('show');
             }
         }
         
         function calculate() {
             var currentCostInput = document.getElementById('currentCost');
+            var monthsRemainingInput = document.getElementById('monthsRemaining');
             var sitesToMigrateInput = document.getElementById('sitesToMigrate');
             var planSelect = document.getElementById('pressablePlan');
             var billingType = getBillingType();
             var hasContract = getHasContract();
             
             var currentCost = hasContract ? parseFloat(currentCostInput.value) : 0;
+            var monthsRemaining = hasContract ? parseInt(monthsRemainingInput.value) : 0;
             var sitesToMigrate = parseInt(sitesToMigrateInput.value);
             var planIndex = parseInt(planSelect.value);
             var plan = plans[planIndex];
@@ -524,9 +557,16 @@
                 return;
             }
             
+            if (isNaN(monthsRemaining) || monthsRemaining < 0) {
+                monthsRemaining = 0;
+            }
+            
             if (isNaN(sitesToMigrate) || sitesToMigrate < 0) {
                 sitesToMigrate = 0;
             }
+            
+            // Contract overlap cost (paying both hosts during remaining contract period)
+            var overlapCost = currentCost * monthsRemaining;
             
             // Current host calculations
             var currentYear1 = currentCost * 12;
@@ -537,7 +577,7 @@
             // Pressable calculations
             var pressableYear1 = pressableMonthly * 12;
             var pressableYear2 = fullMonthly * 12;
-            var pressableSubtotal = pressableYear1 + pressableYear2;
+            var pressableSubtotal = overlapCost + pressableYear1 + pressableYear2;
             var cashBonus = calculateCashBonus(sitesToMigrate);
             var pressableTotal = pressableSubtotal - cashBonus;
             
@@ -547,13 +587,22 @@
             // Update table header and visibility
             var comparisonTable = document.getElementById('comparisonTable');
             var tableHeader = document.getElementById('tableHeader');
+            var overlapRow = document.getElementById('overlapRow');
             
             if (hasContract) {
                 comparisonTable.classList.remove('no-current');
                 tableHeader.textContent = '2-Year Cost Comparison';
+                
+                // Show/hide overlap row based on months remaining
+                if (monthsRemaining > 0) {
+                    overlapRow.classList.remove('hidden');
+                } else {
+                    overlapRow.classList.add('hidden');
+                }
             } else {
                 comparisonTable.classList.add('no-current');
                 tableHeader.textContent = 'Your Pressable Investment';
+                overlapRow.classList.add('hidden');
             }
             
             // Update table values
@@ -562,6 +611,7 @@
             document.getElementById('currentSubtotal').textContent = formatCurrency(currentSubtotal);
             document.getElementById('currentTotal').textContent = formatCurrency(currentTotal);
             
+            document.getElementById('overlapCost').textContent = formatCurrency(overlapCost);
             document.getElementById('pressableYear1').innerHTML = formatCurrency(pressableYear1) + ' <span class="discount">(' + discountPercent + '% off)</span>';
             document.getElementById('pressableYear2').textContent = formatCurrency(pressableYear2);
             document.getElementById('pressableSubtotal').textContent = formatCurrency(pressableSubtotal);
