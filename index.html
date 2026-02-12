@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pressable Savings Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -11,7 +13,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);
+            background: #040024;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
@@ -24,7 +26,7 @@
             background: white;
             border-radius: 16px;
             padding: 40px;
-            max-width: 600px;
+            max-width: 650px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
@@ -36,7 +38,7 @@
         
         .logo h1 {
             margin: 0;
-            color: #0073aa;
+            color: #dd3a03;
             font-size: 28px;
         }
         
@@ -49,15 +51,11 @@
             margin-bottom: 24px;
         }
         
-        .input-group.hidden {
-            display: none;
-        }
-        
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #040024;
         }
         
         .hint {
@@ -77,7 +75,8 @@
         
         input:focus, select:focus {
             outline: none;
-            border-color: #0073aa;
+            border-color: #1c54e3;
+            box-shadow: 0 0 0 3px rgba(28, 84, 227, 0.12);
         }
         
         .toggle-group {
@@ -112,15 +111,19 @@
         }
         
         .toggle-option input:checked + .toggle-label {
-            background: #e3f2fd;
-            border-color: #0073aa;
-            color: #0073aa;
+            background: rgba(28, 84, 227, 0.06);
+            border-color: #1c54e3;
         }
         
         .toggle-label strong {
             display: block;
             font-size: 16px;
             margin-bottom: 4px;
+            color: #040024;
+        }
+        
+        .toggle-option input:checked + .toggle-label strong {
+            color: #1c54e3;
         }
         
         .toggle-label span {
@@ -129,13 +132,13 @@
         }
         
         .toggle-option input:checked + .toggle-label span {
-            color: #0073aa;
+            color: #1c54e3;
         }
         
         button {
             width: 100%;
             padding: 16px;
-            background: #0073aa;
+            background: #dd3a03;
             color: white;
             border: none;
             border-radius: 8px;
@@ -146,7 +149,7 @@
         }
         
         button:hover {
-            background: #005a87;
+            background: #c43300;
         }
         
         .results {
@@ -160,6 +163,34 @@
             display: block;
         }
         
+        .plan-details {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .plan-detail-card {
+            flex: 1;
+            background: #040024;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .plan-detail-card .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #03fcc2;
+            margin: 0;
+        }
+        
+        .plan-detail-card .label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        
         .comparison-table {
             width: 100%;
             border-collapse: collapse;
@@ -168,12 +199,11 @@
         }
         
         .comparison-table th {
-            background: #f8f9fa;
+            background: #040024;
             padding: 12px;
             text-align: left;
             font-weight: 600;
-            color: #333;
-            border-bottom: 2px solid #e1e5e9;
+            color: #ffffff;
         }
         
         .comparison-table th:first-child {
@@ -195,7 +225,7 @@
         }
         
         .comparison-table tr.bonus td {
-            color: #2e7d32;
+            color: #0a8a5e;
         }
         
         .comparison-table tr.total td {
@@ -220,13 +250,19 @@
         
         .comparison-table .pressable {
             text-align: right;
-            color: #0073aa;
+            color: #1c54e3;
         }
         
         .comparison-table .discount {
             font-size: 12px;
-            color: #2e7d32;
+            color: #0a8a5e;
             font-weight: 600;
+        }
+        
+        .comparison-table .per-month {
+            font-size: 12px;
+            color: #666;
+            font-weight: 400;
         }
         
         .comparison-table .dash {
@@ -250,38 +286,22 @@
         }
         
         .savings-box {
-            background: #e8f5e9;
+            background: #040024;
             border-radius: 12px;
             padding: 24px;
             text-align: center;
             margin-top: 20px;
         }
         
-        .savings-box.negative {
-            background: #e3f2fd;
-        }
-        
-        .savings-box.info {
-            background: #e3f2fd;
-        }
-        
         .savings-amount {
             font-size: 32px;
             font-weight: 700;
-            color: #2e7d32;
+            color: #03fcc2;
             margin: 0;
         }
         
-        .savings-box.negative .savings-amount {
-            color: #1565c0;
-        }
-        
-        .savings-box.info .savings-amount {
-            color: #1565c0;
-        }
-        
         .savings-label {
-            color: #666;
+            color: rgba(255, 255, 255, 0.6);
             margin-top: 4px;
             font-size: 14px;
         }
@@ -292,7 +312,8 @@
         }
         
         .bonus-note {
-            background: #fff8e1;
+            background: rgba(28, 84, 227, 0.06);
+            border: 1px solid rgba(28, 84, 227, 0.15);
             border-radius: 8px;
             padding: 12px;
             margin-top: 16px;
@@ -301,7 +322,7 @@
         }
         
         .bonus-note strong {
-            color: #f57c00;
+            color: #dd3a03;
         }
         
         .contract-fields {
@@ -310,6 +331,15 @@
         
         .contract-fields.show {
             display: block;
+        }
+        
+        .pdf-button {
+            margin-top: 20px;
+            background: #1c54e3;
+        }
+        
+        .pdf-button:hover {
+            background: #1545c0;
         }
     </style>
 </head>
@@ -326,12 +356,14 @@
                 <input type="radio" name="hasContract" id="hasContractYes" value="yes">
                 <label class="toggle-label" for="hasContractYes">
                     <strong>Yes</strong>
+                    <span>Switching from another host</span>
                 </label>
             </div>
             <div class="toggle-option">
                 <input type="radio" name="hasContract" id="hasContractNo" value="no" checked>
                 <label class="toggle-label" for="hasContractNo">
                     <strong>No</strong>
+                    <span>New hosting customer</span>
                 </label>
             </div>
         </div>
@@ -381,13 +413,28 @@
         </div>
         
         <div class="input-group">
-            <label>Pressable Plan (discounted price)</label>
+            <label>Pressable Plan</label>
             <select id="pressablePlan"></select>
         </div>
         
         <button id="calcButton">Calculate Savings</button>
         
         <div class="results" id="results">
+            <div class="plan-details" id="planDetails">
+                <div class="plan-detail-card">
+                    <p class="value" id="detailInstalls">0</p>
+                    <p class="label">Installs</p>
+                </div>
+                <div class="plan-detail-card">
+                    <p class="value" id="detailVisits">0</p>
+                    <p class="label">Monthly Visits</p>
+                </div>
+                <div class="plan-detail-card">
+                    <p class="value" id="detailStorage">0</p>
+                    <p class="label">Storage</p>
+                </div>
+            </div>
+            
             <table class="comparison-table" id="comparisonTable">
                 <thead>
                     <tr>
@@ -397,7 +444,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="overlap-row" id="overlapRow">
+                    <tr class="overlap-row hidden" id="overlapRow">
                         <td>Remaining cost at current host</td>
                         <td class="current-host current-host-col"><span class="dash">—</span></td>
                         <td class="pressable" id="overlapCost">$0</td>
@@ -437,32 +484,41 @@
             </div>
             
             <div class="bonus-note" id="bonusNote"></div>
+            
+            <button class="pdf-button" id="pdfButton">📄 Download PDF</button>
         </div>
     </div>
     
     <script>
         var plans = [
-            { name: "Signature 1", sites: 1, annual: 10.415, monthly: 18.75 },
-            { name: "Signature 2", sites: 3, annual: 18.75, monthly: 33.75 },
-            { name: "Signature 3", sites: 5, annual: 25.00, monthly: 45.00 },
-            { name: "Signature 4", sites: 10, annual: 37.50, monthly: 67.50 },
-            { name: "Signature 5", sites: 20, annual: 64.585, monthly: 116.25 },
-            { name: "Signature 6", sites: 50, annual: 145.935, monthly: 262.50 },
-            { name: "Signature 7", sites: 80, annual: 227.085, monthly: 408.75 },
-            { name: "Signature 8", sites: 100, annual: 281.25, monthly: 506.25 },
-            { name: "Signature 9", sites: 120, annual: 335.42, monthly: 603.75 },
-            { name: "Signature 10", sites: 150, annual: 416.67, monthly: 750.00 },
-            { name: "Signature 11", sites: 200, annual: 552.08, monthly: 993.75 },
-            { name: "Signature 12", sites: 250, annual: 687.50, monthly: 1237.50 },
-            { name: "Signature 13", sites: 300, annual: 822.92, monthly: 1481.25 },
-            { name: "Signature 14", sites: 350, annual: 958.33, monthly: 1725.00 },
-            { name: "Signature 15", sites: 400, annual: 1093.75, monthly: 1968.75 },
-            { name: "Signature 16", sites: 450, annual: 1229.17, monthly: 2212.50 },
-            { name: "Signature 17", sites: 500, annual: 1364.58, monthly: 2456.25 }
+            { name: "Signature 1",  installs: 1,   visits: 30000,    storage: 20,   fullAnnual: 250,   fullMonthly: 25 },
+            { name: "Signature 2",  installs: 3,   visits: 50000,    storage: 30,   fullAnnual: 450,   fullMonthly: 45 },
+            { name: "Signature 3",  installs: 5,   visits: 75000,    storage: 35,   fullAnnual: 600,   fullMonthly: 60 },
+            { name: "Signature 4",  installs: 10,  visits: 150000,   storage: 50,   fullAnnual: 900,   fullMonthly: 90 },
+            { name: "Signature 5",  installs: 20,  visits: 400000,   storage: 80,   fullAnnual: 1550,  fullMonthly: 155 },
+            { name: "Signature 6",  installs: 50,  visits: 1000000,  storage: 200,  fullAnnual: 3500,  fullMonthly: 350 },
+            { name: "Signature 7",  installs: 80,  visits: 1600000,  storage: 275,  fullAnnual: 5450,  fullMonthly: 545 },
+            { name: "Signature 8",  installs: 100, visits: 2000000,  storage: 325,  fullAnnual: 6750,  fullMonthly: 675 },
+            { name: "Signature 9",  installs: 120, visits: 2400000,  storage: 375,  fullAnnual: 8050,  fullMonthly: 805 },
+            { name: "Signature 10", installs: 150, visits: 3000000,  storage: 450,  fullAnnual: 10000, fullMonthly: 1000 },
+            { name: "Signature 11", installs: 200, visits: 4000000,  storage: 500,  fullAnnual: 13250, fullMonthly: 1325 },
+            { name: "Signature 12", installs: 250, visits: 5000000,  storage: 550,  fullAnnual: 16500, fullMonthly: 1650 },
+            { name: "Signature 13", installs: 300, visits: 6000000,  storage: 600,  fullAnnual: 19750, fullMonthly: 1975 },
+            { name: "Signature 14", installs: 350, visits: 7000000,  storage: 700,  fullAnnual: 23000, fullMonthly: 2300 },
+            { name: "Signature 15", installs: 400, visits: 8000000,  storage: 800,  fullAnnual: 26250, fullMonthly: 2625 },
+            { name: "Signature 16", installs: 450, visits: 9000000,  storage: 900,  fullAnnual: 29500, fullMonthly: 2950 },
+            { name: "Signature 17", installs: 500, visits: 10000000, storage: 1000, fullAnnual: 32750, fullMonthly: 3275 }
         ];
         
         function formatCurrency(amount) {
             return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1) + 'M';
+            }
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
         
         function getBillingType() {
@@ -473,22 +529,33 @@
             return document.querySelector('input[name="hasContract"]:checked').value === 'yes';
         }
         
-        function calculateCashBonus(sites) {
-            if (sites <= 0) {
-                return 0;
-            }
-            
-            var bonus = 0;
-            
-            // 1-10 sites: $150 per site
-            // 11+ sites: $200 per site
-            if (sites <= 10) {
-                bonus = sites * 150;
+        function getDiscountedYear1(plan, billingType) {
+            if (billingType === 'annual') {
+                return plan.fullAnnual * 0.50;
             } else {
-                bonus = sites * 200;
+                return plan.fullMonthly * 0.75 * 12;
             }
-            
-            // Cap at $10,000
+        }
+        
+        function getFullYear2(plan, billingType) {
+            if (billingType === 'annual') {
+                return plan.fullAnnual;
+            } else {
+                return plan.fullMonthly * 12;
+            }
+        }
+        
+        function getDiscountedMonthly(plan, billingType) {
+            if (billingType === 'annual') {
+                return (plan.fullAnnual * 0.50) / 12;
+            } else {
+                return plan.fullMonthly * 0.75;
+            }
+        }
+        
+        function calculateCashBonus(sites) {
+            if (sites <= 0) return 0;
+            var bonus = sites <= 10 ? sites * 150 : sites * 200;
             return Math.min(bonus, 10000);
         }
         
@@ -501,10 +568,17 @@
             
             for (var i = 0; i < plans.length; i++) {
                 var plan = plans[i];
-                var price = billingType === 'annual' ? plan.annual : plan.monthly;
                 var option = document.createElement('option');
                 option.value = i;
-                option.textContent = plan.name + ' — ' + formatCurrency(price) + '/mo (' + plan.sites + (plan.sites === 1 ? ' site' : ' sites') + ')';
+                
+                if (billingType === 'annual') {
+                    var discountedYr = plan.fullAnnual * 0.50;
+                    option.textContent = plan.name + ' — ' + formatCurrency(discountedYr) + '/yr (' + plan.installs + (plan.installs === 1 ? ' install' : ' installs') + ')';
+                } else {
+                    var discountedMo = plan.fullMonthly * 0.75;
+                    option.textContent = plan.name + ' — ' + formatCurrency(discountedMo) + '/mo (' + plan.installs + (plan.installs === 1 ? ' install' : ' installs') + ')';
+                }
+                
                 select.appendChild(option);
             }
             
@@ -524,6 +598,8 @@
             }
         }
         
+        var lastCalc = {};
+        
         function calculate() {
             var currentCostInput = document.getElementById('currentCost');
             var monthsRemainingInput = document.getElementById('monthsRemaining');
@@ -538,51 +614,65 @@
             var planIndex = parseInt(planSelect.value);
             var plan = plans[planIndex];
             
-            // Year 1 promo pricing
-            var pressableMonthly = billingType === 'annual' ? plan.annual : plan.monthly;
             var discountPercent = billingType === 'annual' ? 50 : 25;
-            
-            // Year 2 full pricing
-            var fullMonthly;
-            if (billingType === 'annual') {
-                fullMonthly = plan.annual * 2;
-            } else {
-                fullMonthly = plan.monthly / 0.75;
-            }
             
             if (hasContract && (isNaN(currentCost) || currentCost <= 0)) {
                 alert('Please enter your current monthly hosting cost');
                 return;
             }
             
-            if (isNaN(monthsRemaining) || monthsRemaining < 0) {
-                monthsRemaining = 0;
-            }
+            if (isNaN(monthsRemaining) || monthsRemaining < 0) monthsRemaining = 0;
+            if (isNaN(sitesToMigrate) || sitesToMigrate < 0) sitesToMigrate = 0;
             
-            if (isNaN(sitesToMigrate) || sitesToMigrate < 0) {
-                sitesToMigrate = 0;
-            }
-            
-            // Remaining cost at current host
             var overlapCost = currentCost * monthsRemaining;
+            var pressableYear1 = getDiscountedYear1(plan, billingType);
+            var pressableYear2 = getFullYear2(plan, billingType);
             
-            // Current host calculations
+            // Monthly prices for display
+            var discountedMo = getDiscountedMonthly(plan, billingType);
+            var fullMo = billingType === 'annual' ? plan.fullAnnual / 12 : plan.fullMonthly;
+            
             var currentYear1 = currentCost * 12;
             var currentYear2 = currentCost * 12;
             var currentSubtotal = currentYear1 + currentYear2;
             var currentTotal = currentSubtotal;
             
-            // Pressable calculations
-            var pressableYear1 = pressableMonthly * 12;
-            var pressableYear2 = fullMonthly * 12;
             var pressableSubtotal = overlapCost + pressableYear1 + pressableYear2;
             var cashBonus = calculateCashBonus(sitesToMigrate);
             var pressableTotal = pressableSubtotal - cashBonus;
             
-            // Savings calculation
             var savings = currentTotal - pressableTotal;
             
-            // Update table header and visibility
+            lastCalc = {
+                planName: plan.name,
+                installs: plan.installs,
+                visits: plan.visits,
+                storage: plan.storage,
+                billingType: billingType,
+                discountPercent: discountPercent,
+                discountedMo: discountedMo,
+                fullMo: fullMo,
+                hasContract: hasContract,
+                currentCost: currentCost,
+                monthsRemaining: monthsRemaining,
+                sitesToMigrate: sitesToMigrate,
+                overlapCost: overlapCost,
+                currentYear1: currentYear1,
+                currentYear2: currentYear2,
+                currentSubtotal: currentSubtotal,
+                currentTotal: currentTotal,
+                pressableYear1: pressableYear1,
+                pressableYear2: pressableYear2,
+                pressableSubtotal: pressableSubtotal,
+                cashBonus: cashBonus,
+                pressableTotal: pressableTotal,
+                savings: savings
+            };
+            
+            document.getElementById('detailInstalls').textContent = plan.installs;
+            document.getElementById('detailVisits').textContent = formatNumber(plan.visits);
+            document.getElementById('detailStorage').textContent = plan.storage + ' GB';
+            
             var comparisonTable = document.getElementById('comparisonTable');
             var tableHeader = document.getElementById('tableHeader');
             var overlapRow = document.getElementById('overlapRow');
@@ -590,8 +680,6 @@
             if (hasContract) {
                 comparisonTable.classList.remove('no-current');
                 tableHeader.textContent = '2-Year Cost Comparison';
-                
-                // Show/hide overlap row based on months remaining
                 if (monthsRemaining > 0) {
                     overlapRow.classList.remove('hidden');
                 } else {
@@ -603,71 +691,69 @@
                 overlapRow.classList.add('hidden');
             }
             
-            // Update table values
             document.getElementById('currentYear1').textContent = formatCurrency(currentYear1);
             document.getElementById('currentYear2').textContent = formatCurrency(currentYear2);
             document.getElementById('currentSubtotal').textContent = formatCurrency(currentSubtotal);
             document.getElementById('currentTotal').textContent = formatCurrency(currentTotal);
             
             document.getElementById('overlapCost').textContent = formatCurrency(overlapCost);
-            document.getElementById('pressableYear1').innerHTML = formatCurrency(pressableYear1) + ' <span class="discount">(' + discountPercent + '% off)</span>';
-            document.getElementById('pressableYear2').textContent = formatCurrency(pressableYear2);
+            
+            // Year 1 display
+            if (billingType === 'monthly') {
+                document.getElementById('pressableYear1').innerHTML = formatCurrency(pressableYear1) + '<br><span class="per-month">' + formatCurrency(discountedMo) + '/mo</span> <span class="discount">(' + discountPercent + '% off)</span>';
+            } else {
+                document.getElementById('pressableYear1').innerHTML = formatCurrency(pressableYear1) + ' <span class="discount">(' + discountPercent + '% off)</span>';
+            }
+            
+            // Year 2 display
+            if (billingType === 'monthly') {
+                document.getElementById('pressableYear2').innerHTML = formatCurrency(pressableYear2) + '<br><span class="per-month">' + formatCurrency(fullMo) + '/mo</span>';
+            } else {
+                document.getElementById('pressableYear2').textContent = formatCurrency(pressableYear2);
+            }
+            
             document.getElementById('pressableSubtotal').textContent = formatCurrency(pressableSubtotal);
             document.getElementById('cashBonus').textContent = '-' + formatCurrency(cashBonus);
             
-            // Handle negative total (getting paid)
             if (pressableTotal < 0) {
                 document.getElementById('pressableTotal').textContent = '-' + formatCurrency(Math.abs(pressableTotal));
             } else {
                 document.getElementById('pressableTotal').textContent = formatCurrency(pressableTotal);
             }
             
-            // Update savings box
             var savingsBox = document.getElementById('savingsBox');
             var savingsAmount = document.getElementById('savingsAmount');
             var savingsLabel = document.getElementById('savingsLabel');
             var savingsEmoji = document.getElementById('savingsEmoji');
             
             if (!hasContract) {
-                // No current contract - show total cost/earnings
                 if (pressableTotal < 0) {
-                    savingsBox.className = 'savings-box negative';
                     savingsEmoji.textContent = '🎉';
                     savingsAmount.textContent = formatCurrency(Math.abs(pressableTotal));
                     savingsLabel.textContent = 'YOU GET PAID to host with Pressable';
                 } else {
-                    savingsBox.className = 'savings-box info';
                     savingsEmoji.textContent = '✨';
                     savingsAmount.textContent = formatCurrency(pressableTotal);
                     savingsLabel.textContent = 'total 2-year cost of ownership';
                 }
             } else if (pressableTotal < 0) {
-                // Getting paid to switch
-                savingsBox.className = 'savings-box negative';
                 savingsEmoji.textContent = '🎉';
                 savingsAmount.textContent = formatCurrency(Math.abs(pressableTotal));
                 savingsLabel.textContent = 'YOU GET PAID to switch to Pressable';
             } else if (savings > 0) {
-                // Saving money
-                savingsBox.className = 'savings-box';
                 savingsEmoji.textContent = '💰';
                 savingsAmount.textContent = formatCurrency(savings);
                 savingsLabel.textContent = 'saved over 2 years';
             } else if (savings < 0) {
-                // Costs more
-                savingsBox.className = 'savings-box negative';
                 savingsEmoji.textContent = '📊';
                 savingsAmount.textContent = formatCurrency(Math.abs(savings));
                 savingsLabel.textContent = 'additional cost over 2 years';
             } else {
-                // Break even
-                savingsBox.className = 'savings-box';
                 savingsEmoji.textContent = '➡️';
                 savingsAmount.textContent = '$0';
                 savingsLabel.textContent = 'break even — switch for better service!';
             }
             
-            // Bonus note
             var bonusNote = document.getElementById('bonusNote');
             if (sitesToMigrate > 0) {
                 var ratePerSite = sitesToMigrate >= 11 ? 200 : 150;
@@ -685,12 +771,196 @@
             document.getElementById('results').className = 'results show';
         }
         
+        function generatePDF() {
+            var c = lastCalc;
+            if (!c.planName) return;
+            
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF();
+            
+            var pageWidth = doc.internal.pageSize.getWidth();
+            var margin = 20;
+            var y = 20;
+            
+            // Header
+            doc.setFontSize(22);
+            doc.setTextColor(221, 58, 3);
+            doc.text('Pressable', margin, y);
+            y += 8;
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Savings Calculator Results', margin, y);
+            y += 4;
+            doc.setDrawColor(221, 58, 3);
+            doc.setLineWidth(0.5);
+            doc.line(margin, y, pageWidth - margin, y);
+            y += 12;
+            
+            // Plan details
+            doc.setFontSize(14);
+            doc.setTextColor(4, 0, 36);
+            doc.text('Plan: ' + c.planName + ' (' + (c.billingType === 'annual' ? 'Annual' : 'Monthly') + ' billing)', margin, y);
+            y += 10;
+            
+            doc.setFontSize(11);
+            doc.setTextColor(80, 80, 80);
+            doc.text('Installs: ' + c.installs, margin, y);
+            doc.text('Monthly Visits: ' + formatNumber(c.visits), margin + 50, y);
+            doc.text('Storage: ' + c.storage + ' GB', margin + 120, y);
+            y += 8;
+            
+            if (c.sitesToMigrate > 0) {
+                doc.text('Sites to Migrate: ' + c.sitesToMigrate, margin, y);
+                y += 8;
+            }
+            
+            if (c.hasContract) {
+                doc.text('Current Monthly Hosting Cost: ' + formatCurrency(c.currentCost), margin, y);
+                y += 8;
+                if (c.monthsRemaining > 0) {
+                    doc.text('Months Remaining on Contract: ' + c.monthsRemaining, margin, y);
+                    y += 8;
+                }
+            }
+            
+            y += 6;
+            
+            // Build table
+            var tableHead = [];
+            var tableBody = [];
+            
+            // Year 1 and Year 2 display strings for PDF
+            var y1Str = formatCurrency(c.pressableYear1) + ' (' + c.discountPercent + '% off)';
+            var y2Str = formatCurrency(c.pressableYear2);
+            
+            if (c.billingType === 'monthly') {
+                y1Str = formatCurrency(c.pressableYear1) + ' (' + formatCurrency(c.discountedMo) + '/mo — ' + c.discountPercent + '% off)';
+                y2Str = formatCurrency(c.pressableYear2) + ' (' + formatCurrency(c.fullMo) + '/mo)';
+            }
+            
+            if (c.hasContract) {
+                tableHead = [['', 'Current Host', 'Pressable']];
+                
+                if (c.monthsRemaining > 0) {
+                    tableBody.push(['Remaining cost at current host', '—', formatCurrency(c.overlapCost)]);
+                }
+                
+                tableBody.push(['Year 1', formatCurrency(c.currentYear1), y1Str]);
+                tableBody.push(['Year 2', formatCurrency(c.currentYear2), y2Str]);
+                tableBody.push(['Subtotal', formatCurrency(c.currentSubtotal), formatCurrency(c.pressableSubtotal)]);
+                tableBody.push(['Cash bonus', '—', '-' + formatCurrency(c.cashBonus)]);
+                
+                var totalStr = c.pressableTotal < 0 ? '-' + formatCurrency(Math.abs(c.pressableTotal)) : formatCurrency(c.pressableTotal);
+                tableBody.push(['TOTAL (2 years)', formatCurrency(c.currentTotal), totalStr]);
+            } else {
+                tableHead = [['', 'Pressable']];
+                
+                tableBody.push(['Year 1', y1Str]);
+                tableBody.push(['Year 2', y2Str]);
+                tableBody.push(['Subtotal', formatCurrency(c.pressableSubtotal)]);
+                tableBody.push(['Cash bonus', '-' + formatCurrency(c.cashBonus)]);
+                
+                var totalStr2 = c.pressableTotal < 0 ? '-' + formatCurrency(Math.abs(c.pressableTotal)) : formatCurrency(c.pressableTotal);
+                tableBody.push(['TOTAL (2 years)', totalStr2]);
+            }
+            
+            doc.autoTable({
+                head: tableHead,
+                body: tableBody,
+                startY: y,
+                margin: { left: margin, right: margin },
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [4, 0, 36],
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    lineWidth: 0.1,
+                    lineColor: [4, 0, 36]
+                },
+                bodyStyles: {
+                    textColor: [80, 80, 80],
+                    lineWidth: 0.1,
+                    lineColor: [220, 220, 220]
+                },
+                didParseCell: function(data) {
+                    var lastIndex = tableBody.length - 1;
+                    var bonusIndex = tableBody.length - 2;
+                    
+                    if (data.row.index === lastIndex && data.section === 'body') {
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.fillColor = [248, 249, 250];
+                        data.cell.styles.textColor = [4, 0, 36];
+                    }
+                    
+                    if (data.row.index === bonusIndex && data.section === 'body') {
+                        data.cell.styles.textColor = [10, 138, 94];
+                    }
+                }
+            });
+            
+            y = doc.lastAutoTable.finalY + 16;
+            
+            // Savings summary
+            var summaryText = '';
+            var summaryColor = [10, 138, 94];
+            
+            if (!c.hasContract) {
+                if (c.pressableTotal < 0) {
+                    summaryText = 'YOU GET PAID ' + formatCurrency(Math.abs(c.pressableTotal)) + ' to host with Pressable';
+                    summaryColor = [28, 84, 227];
+                } else {
+                    summaryText = 'Total 2-year cost of ownership: ' + formatCurrency(c.pressableTotal);
+                    summaryColor = [28, 84, 227];
+                }
+            } else if (c.pressableTotal < 0) {
+                summaryText = 'YOU GET PAID ' + formatCurrency(Math.abs(c.pressableTotal)) + ' to switch to Pressable';
+                summaryColor = [28, 84, 227];
+            } else if (c.savings > 0) {
+                summaryText = 'YOU SAVE ' + formatCurrency(c.savings) + ' over 2 years';
+                summaryColor = [10, 138, 94];
+            } else if (c.savings < 0) {
+                summaryText = 'Additional cost of ' + formatCurrency(Math.abs(c.savings)) + ' over 2 years';
+                summaryColor = [221, 58, 3];
+            } else {
+                summaryText = 'Break even — switch for better service!';
+                summaryColor = [10, 138, 94];
+            }
+            
+            doc.setFontSize(16);
+            doc.setTextColor(summaryColor[0], summaryColor[1], summaryColor[2]);
+            doc.text(summaryText, pageWidth / 2, y, { align: 'center' });
+            y += 12;
+            
+            // Cash bonus note
+            if (c.sitesToMigrate > 0) {
+                var ratePerSite = c.sitesToMigrate >= 11 ? 200 : 150;
+                var rawBonus = c.sitesToMigrate * ratePerSite;
+                var noteText = 'Cash Bonus: ' + c.sitesToMigrate + ' site' + (c.sitesToMigrate > 1 ? 's' : '') + ' x $' + ratePerSite + ' = ' + formatCurrency(rawBonus);
+                if (c.cashBonus === 10000) {
+                    noteText += ' (capped at $10,000)';
+                }
+                doc.setFontSize(10);
+                doc.setTextColor(150, 150, 150);
+                doc.text(noteText, pageWidth / 2, y, { align: 'center' });
+                y += 8;
+            }
+            
+            // Footer
+            y = doc.internal.pageSize.getHeight() - 15;
+            doc.setFontSize(9);
+            doc.setTextColor(180, 180, 180);
+            doc.text('Generated by Pressable Savings Calculator — ' + new Date().toLocaleDateString(), pageWidth / 2, y, { align: 'center' });
+            
+            doc.save('Pressable-Savings-' + c.planName.replace(/\s/g, '-') + '.pdf');
+        }
+        
         // Initialize
         updatePlanDropdown();
         updateContractFields();
         
         // Event listeners
         document.getElementById('calcButton').addEventListener('click', calculate);
+        document.getElementById('pdfButton').addEventListener('click', generatePDF);
         document.getElementById('billingAnnual').addEventListener('change', updatePlanDropdown);
         document.getElementById('billingMonthly').addEventListener('change', updatePlanDropdown);
         document.getElementById('hasContractYes').addEventListener('change', updateContractFields);
